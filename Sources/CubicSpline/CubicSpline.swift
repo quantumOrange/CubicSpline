@@ -7,8 +7,6 @@ typealias LAInt = __CLPK_integer
 
 public struct CubicSpline {
     
-    
-    
     public var segments:[CubicCurve]
     
     public init() {
@@ -104,4 +102,21 @@ public struct CubicSpline {
         return nil
     }
 }
+
+extension CubicSpline {
+    public func callAsFunction(t:Double) -> SIMD2<Double> {
+        guard let last = segments.last, let first = segments.first else {return SIMD2<Double>.zero}
+        guard t < 1 else {return last.end}
+        guard t >= 0 else {return first.start}
+        
+        let T = t * Double(segments.count)
+        let i = Int(T)
+        let v = T.remainder(dividingBy: 1)
+        
+        let curve = segments[i]
+        
+        return curve(t: v)
+    }
+}
+
 

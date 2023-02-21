@@ -10,7 +10,7 @@ let package = Package(
         .library(
             name: "CubicSpline",
             targets: ["CubicSpline"]),
-      //  .library(name: "CubicSplineUI", targets: ["CubicSplineUI"]),
+       .library(name: "CubicSplineUI", targets: ["CubicSplineUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMajor(from: "1.0.0")),
@@ -23,6 +23,9 @@ let package = Package(
         .target(
             name: "CubicSpline",
             dependencies: [.product(name: "Algorithms", package: "swift-algorithms")]),
+        .target(
+            name: "CubicSplineUI",
+            dependencies: ["CubicSpline"]),
         .testTarget(
             name: "CubicSplineTests",
             dependencies: ["CubicSpline"]),

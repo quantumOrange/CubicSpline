@@ -60,3 +60,7 @@ public struct CubicCurve {
         self.d = 2 * (start - end) + c_start + c_end
     }
 }
+
+extension CubicCurve {
+    public func callAsFunction(t:Double) -> SIMD2<Double> { f(t) }
+}
