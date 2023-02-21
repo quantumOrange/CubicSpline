@@ -35,7 +35,7 @@ class CubicSplineTests: XCTestCase {
         XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
-        var previous:Segment?
+        var previous:CubicCurve?
         
         //Positions should agree at the endpoints of the pieces
         for piece in pieces {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Array where Element==CubicSpline.Segment {
+extension Array where Element==CubicCurve {
     var endPoints:[SIMD2<Double>] {
         guard let last = last else {return []}
         var points = map { $0.start }
