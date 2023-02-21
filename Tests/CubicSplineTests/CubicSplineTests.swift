@@ -35,35 +35,35 @@ class CubicSplineTests: XCTestCase {
         XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
-        var previuos:CubicSpline.Segment?
+        var previous:Segment?
         
         //Positions should agree at the endpoints of the pieces
         for piece in pieces {
-            if let pre = previuos {
+            if let pre = previous {
                 XCTAssertEqual(pre.f(1).x, piece.f(0).x, accuracy:accuracy)
                 XCTAssertEqual(pre.f(1).y, piece.f(0).y, accuracy:accuracy)
             }
-            previuos = piece
+            previous = piece
         }
         
         // Derivitives should agree at the endpoints of the pieces
-        previuos = nil
+        previous = nil
         for piece in pieces {
-            if let pre = previuos {
+            if let pre = previous {
                 XCTAssertEqual(pre.df(1).x, piece.df(0).x, accuracy:accuracy)
                 XCTAssertEqual(pre.df(1).y, piece.df(0).y, accuracy:accuracy)
             }
-            previuos = piece
+            previous = piece
         }
         
         // Second derivitives should agree at the endpoints of the pieces
-        previuos = nil
+        previous = nil
         for piece in pieces {
-            if let pre = previuos {
+            if let pre = previous {
                 XCTAssertEqual(pre.ddf(1).x, piece.ddf(0).x, accuracy:accuracy)
                 XCTAssertEqual(pre.ddf(1).y, piece.ddf(0).y, accuracy:accuracy)
             }
-            previuos = piece
+            previous = piece
         }
  
     }
@@ -82,7 +82,7 @@ class CubicSplineTests: XCTestCase {
         }
     }
     
-    /*
+    
     // Commented out becuase this test takes quite a while
     func testPerformanceCubicSpline1000000() throws {
         let points = getSinusoidalPoints(n:1000000)
@@ -90,5 +90,5 @@ class CubicSplineTests: XCTestCase {
             let _ = CubicSpline(points:points)
         }
     }
-    */
+    
 }
