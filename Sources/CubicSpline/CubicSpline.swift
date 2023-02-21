@@ -21,8 +21,14 @@ public struct CubicSpline {
             a + b + c + d
         }
         
-        
-        
+        public var bezierControlPoint1:SIMD2<Double> {
+            a + b / 3.0
+        }
+
+        public var bezierControlPoint2:SIMD2<Double> {
+            a + 2 * b / 3.0 + c / 3.0
+        }
+
         public func f(_ t:Double) -> SIMD2<Double> {
             let t_2:Double = t * t
             let t_3:Double = t_2  * t
