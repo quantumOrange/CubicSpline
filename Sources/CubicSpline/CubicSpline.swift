@@ -1,9 +1,13 @@
 import Foundation
-import Accelerate
 import simd
 
-
-typealias LAInt = __CLPK_integer
+#if os(OSX) || os(iOS)
+    import Accelerate
+    typealias LAInt = __CLPK_integer
+#elseif os(Linux)
+    import CLapacke_Linux
+    typealias LAInt = Int32
+#endif
 
 public struct CubicSpline {
     
@@ -34,8 +38,11 @@ public struct CubicSpline {
     }
     
     public init(points:[SIMD2<Double>]) {
+        // The maths for the following calculation can be found here:
+        // https://mathworld.wolfram.com/CubicSpline.html
+        
         let n = points.count
-        //https://mathworld.wolfram.com/CubicSpline.html
+        
         var vec:[SIMD2<Double>] = []
         
         guard (n >= 2) else {
@@ -55,14 +62,14 @@ public struct CubicSpline {
             }
         }
         
-        guard let control = Self.solve(vec: vec) else {
+        guard let control = Self.solve( vec) else {
             self.segments = []
             return }
         
+        
         let pointPairs = zip(points, points.dropFirst())
-       let controlPairs = zip(control, control.dropFirst())
-      ///  let pointPairs = points.a
-       //  let controlPairs = zip(control, control.dropFirst())
+        let controlPairs = zip(control, control.dropFirst())
+      
         let zippedPairs = zip(pointPairs,controlPairs)
         
         self.segments = zippedPairs.map { pointPairs, controlPairs in
@@ -72,15 +79,28 @@ public struct CubicSpline {
         }
     }
     
-    static func solve(vec:[SIMD2<Double>]) ->[SIMD2<Double>]? {
-        //http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
-        var b = vec.toDoubleArray()
+    static func solve(_ v:[SIMD2<Double>]) -> [SIMD2<Double>]? {
+        // We need to solve the matrix equation M * d = v
+        // where M is a tri-diagonal matrix:
+         
+        //  2   1   0   0   0 ...    0
+        //  1   4   1   0   0 ...    0
+        //  0   1   4   1   0 ...    0
+        //  0   0   1   4   1 ...    0
+        // ...
+        //  0   0   0   0    1   4   1
+        //  0   0   0   0    0   1   2
         
-        var diaganol = Array<Double>(repeating: 4, count: vec.count)
+        // The lapack function dptsv_ will solve this efficiently:
+        // http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
+        
+        var b = v.toDoubleArray()
+        
+        var diaganol = Array<Double>(repeating: 4, count: v.count)
         diaganol[0] = 2
-        diaganol[vec.count-1] = 2
-        var subDiagonal = Array<Double>(repeating: 1, count: vec.count - 1)
-        var n:LAInt = Int32(vec.count)
+        diaganol[v.count-1] = 2
+        var subDiagonal = Array<Double>(repeating: 1, count: v.count - 1)
+        var n:LAInt = Int32(v.count)
         var nrhs:LAInt = 2
         var info:LAInt = 0
         
@@ -119,4 +139,8 @@ extension CubicSpline {
     }
 }
 
-
+extension CubicSpline {
+    public var endPoints:[SIMD2<Double>] {
+        segments.endPoints
+    }
+}

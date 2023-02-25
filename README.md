@@ -1,3 +1,12 @@
 # CubicSpline
 
-A description of this package.
+
+
+
+
+
+## Performance
+
+## Linux
+
+`sudo apt-get install liblapacke-dev`

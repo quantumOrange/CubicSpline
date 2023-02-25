@@ -3,10 +3,20 @@
 
 import PackageDescription
 
+var packageDependencies: [Package.Dependency] = [
+    .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMajor(from: "1.0.0")),
+]
+
+var targetDependencies:[Target.Dependency] =  [.product(name: "Algorithms", package: "swift-algorithms")]
+
+#if os(Linux)
+    dependencies.append(.package(url: "https://github.com/indisoluble/CLapacke-Linux", .upToNextMajor(from: "1.0.0")))
+    //targetDependencies.append(.product(name: "CLapacke-Linux",package:"CLapacke-Linux"))
+#endif
+
 let package = Package(
     name: "CubicSpline",
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "CubicSpline",
             targets: ["CubicSpline"]),
@@ -14,15 +24,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMajor(from: "1.0.0")),
-        // Dependencies declare other packages that this package depends on.
-        //.package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CubicSpline",
-            dependencies: [.product(name: "Algorithms", package: "swift-algorithms")]),
+            dependencies:targetDependencies),
         .target(
             name: "CubicSplineUI",
             dependencies: ["CubicSpline"]),
