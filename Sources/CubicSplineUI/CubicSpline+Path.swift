@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CunbicPath+Path.swift
 //  
 //
 //  Created by David Crooks on 21/02/2023.
@@ -26,9 +26,4 @@ extension CubicSpline {
     }
 }
 
-extension SIMD2 where Scalar==Double {
-    var cgPoint:CGPoint {
-        CGPoint(x: x, y: y)
-    }
-}
 
