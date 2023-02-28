@@ -10,8 +10,7 @@ var packageDependencies: [Package.Dependency] = [
 var targetDependencies:[Target.Dependency] =  [.product(name: "Algorithms", package: "swift-algorithms")]
 
 #if os(Linux)
-    dependencies.append(.package(url: "https://github.com/indisoluble/CLapacke-Linux", .upToNextMajor(from: "1.0.0")))
-    //targetDependencies.append(.product(name: "CLapacke-Linux",package:"CLapacke-Linux"))
+   packageDependencies.append(.package(url: "https://github.com/indisoluble/CLapacke-Linux", .upToNextMajor(from: "1.0.0")))
 #endif
 
 let package = Package(
@@ -22,9 +21,7 @@ let package = Package(
             targets: ["CubicSpline"]),
        .library(name: "CubicSplineUI", targets: ["CubicSplineUI"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMajor(from: "1.0.0")),
-    ],
+    dependencies: packageDependencies,
     targets: [
         .target(
             name: "CubicSpline",

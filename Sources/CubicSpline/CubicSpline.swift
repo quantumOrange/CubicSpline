@@ -79,7 +79,7 @@ public struct CubicSpline {
         }
     }
     
-    static func solve(_ v:[SIMD2<Double>]) throws -> [SIMD2<Double>]? {
+    static func solve(_ v:[SIMD2<Double>]) throws -> [SIMD2<Double>] {
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
         
@@ -124,7 +124,6 @@ public struct CubicSpline {
                 throw LaPackError.impossibleError
         }
         
-        return nil
     }
 }
 
