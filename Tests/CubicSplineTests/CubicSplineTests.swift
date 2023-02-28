@@ -1,6 +1,16 @@
 import XCTest
 @testable import CubicSpline
 
+func getSinusoidalPoints(n:Int) -> [SIMD2<Double>]{
+    (0..<n).map {
+        Double($0)/Double(n-1)
+    }.map {
+        let theta = 2.0 * $0 * .pi
+        let y = 0.5 + 0.5 * sin(theta)
+        return SIMD2<Double>($0, y )
+    }
+}
+
 
 class CubicSplineTests: XCTestCase {
 
@@ -19,8 +29,8 @@ class CubicSplineTests: XCTestCase {
         
         let spline = CubicSpline(points:points)
         
-        XCTAssert(spline.segments.count == points.count - 1, " \(spline.segments.count) != \(points.count) -1")
-        let pieces = spline.segments
+        XCTAssert(spline.cubicCurves.count == points.count - 1, " \(spline.cubicCurves.count) != \(points.count) -1")
+        let pieces = spline.cubicCurves
         
         let first = pieces.first!
         let last = pieces.last!
@@ -68,12 +78,36 @@ class CubicSplineTests: XCTestCase {
  
     }
     
+    func testPerformanceCubicSpline10() throws {
+        let points = getSinusoidalPoints(n:10)
+        self.measure {
+            let _ = CubicSpline(points:points)
+        }
+    }
+    //10, 0.0000978 s
+    
+    
     func testPerformanceCubicSpline100() throws {
         let points = getSinusoidalPoints(n:100)
         self.measure {
             let _ = CubicSpline(points:points)
         }
     }
+    //100, 0.000516 s
+    
+    
+    
+    
+    func testPerformanceCubicSpline1000() throws {
+        let points = getSinusoidalPoints(n:1000)
+        self.measure {
+            let _ = CubicSpline(points:points)
+        }
+    }
+   
+    
+    
+    
     
     func testPerformanceCubicSpline10000() throws {
         let points = getSinusoidalPoints(n:10000)
@@ -82,13 +116,18 @@ class CubicSplineTests: XCTestCase {
         }
     }
     
-    
-    // Commented out becuase this test takes quite a while
-    func testPerformanceCubicSpline1000000() throws {
-        let points = getSinusoidalPoints(n:1000000)
+    func testPerformanceCubicSpline100000() throws {
+        let points = getSinusoidalPoints(n:100000)
         self.measure {
             let _ = CubicSpline(points:points)
         }
     }
-    
+       
 }
+
+// Performance on M1 Max Mac Pro:
+// 10, 0.0000978 s
+// 100, 0.000516 s
+// 1000, 0.00297 s
+// 100000, 0.178 s
+// 1000000,  1.77 s

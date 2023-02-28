@@ -15,17 +15,16 @@ public struct SplineView: View {
     public var body: some View {
         SplineShape(spline:spline)
             .stroke()
-            .overlay {
-                SplinePointsShape(spline: spline, radius: 3)
-                    .fill()
-            }
+            .overlay(SplinePointsShape(spline: spline, radius: 3)
+                .fill())
             
     }
 }
 
-fileprivate let points:[SIMD2<Double>] = [[0.0,1.0],
-                                            [0.2,0.3],
-                                          [1.0,0.0],
+fileprivate let points:[SIMD2<Double>] = [[0.0,0.9],
+                                          [0.3,1.0],
+                                          [0.7,0.0],
+                                          [0.9,0.6],
                                             [1.4,0.6],
                                             [2,1.0]]
 
@@ -43,10 +42,14 @@ struct SplineView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             SplineView(spline:CubicSpline(points:points) )
-            .padding()
+                .padding()
+              
             SplineView(spline:CubicSpline(points:points_2) )
-            .padding()
+                .padding()
+               
         }
+        .padding()
+        
        
     }
 }

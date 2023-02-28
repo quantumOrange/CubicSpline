@@ -19,6 +19,7 @@ extension Array where Element==CGPoint {
 }
 
 extension Array where Element==CGPoint {
+    @available(iOS 13.0, *)
     @available(macOS 10.15, *)
     func pathOfDots(radius:Double) -> Path {
         var path = Path()

@@ -11,22 +11,22 @@ import simd
 
 public struct CubicSpline {
     
-    public var segments:[CubicCurve]
+    public var cubicCurves:[CubicCurve]
     
     public init() {
-        self.segments = []
+        self.cubicCurves = []
     }
     
     mutating func append(points:[SIMD2<Double>]) {
-        guard segments.count > 1 else {
-            let allPoints = segments.endPoints + points
+        guard cubicCurves.count > 1 else {
+            let allPoints = cubicCurves.endPoints + points
             let newSpline = CubicSpline(points:allPoints )
-            segments = newSpline.segments
+            cubicCurves = newSpline.cubicCurves
             return
         }
         
-        let two = segments.removeLast()
-        let one = segments.last!
+        let two = cubicCurves.removeLast()
+        let one = cubicCurves.last!
         
         let lastThreePoints = [one,two].endPoints
         
@@ -34,7 +34,7 @@ public struct CubicSpline {
         
         let newSpline = CubicSpline(points:allPoints )
         
-        segments.append(contentsOf:newSpline.segments.dropFirst())
+        cubicCurves.append(contentsOf:newSpline.cubicCurves.dropFirst())
     }
     
     public init(points:[SIMD2<Double>]) {
@@ -46,7 +46,7 @@ public struct CubicSpline {
         var vec:[SIMD2<Double>] = []
         
         guard (n >= 2) else {
-            self.segments = []
+            self.cubicCurves = []
             return
         }
         
@@ -62,8 +62,8 @@ public struct CubicSpline {
             }
         }
         
-        guard let control = Self.solve( vec) else {
-            self.segments = []
+        guard let control = try? Self.solve(vec) else {
+            self.cubicCurves = []
             return }
         
         
@@ -72,17 +72,17 @@ public struct CubicSpline {
       
         let zippedPairs = zip(pointPairs,controlPairs)
         
-        self.segments = zippedPairs.map { pointPairs, controlPairs in
+        self.cubicCurves = zippedPairs.map { pointPairs, controlPairs in
             let (start, end) =  pointPairs
             let (c_start, c_end) = controlPairs
             return CubicCurve(start: start, end: end, controlStart: c_start, controlEnd: c_end)
         }
     }
     
-    static func solve(_ v:[SIMD2<Double>]) -> [SIMD2<Double>]? {
+    static func solve(_ v:[SIMD2<Double>]) throws -> [SIMD2<Double>]? {
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
-         
+        
         //  2   1   0   0   0 ...    0
         //  1   4   1   0   0 ...    0
         //  0   1   4   1   0 ...    0
@@ -91,7 +91,7 @@ public struct CubicSpline {
         //  0   0   0   0    1   4   1
         //  0   0   0   0    0   1   2
         
-        // The lapack function dptsv_ will solve this efficiently:
+        // The lapack function dptsv will solve this efficiently:
         // http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
         
         var b = v.toDoubleArray()
@@ -112,11 +112,16 @@ public struct CubicSpline {
             }
         }
         
-        if info == 0 {
-            return b.toSIMD2Array()
-        }
-        else {
-            print("Error \(info)")
+        switch info {
+            case 0:
+                return b.toSIMD2Array()
+            case let i where i > 0:
+                throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
+               // assertionFailure("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.")
+            case let i where i < 0:
+                throw LaPackError.illegalValue(Int(i))
+            default:
+                throw LaPackError.impossibleError
         }
         
         return nil
@@ -124,23 +129,26 @@ public struct CubicSpline {
 }
 
 extension CubicSpline {
-    public func callAsFunction(t:Double) -> SIMD2<Double> {
-        guard let last = segments.last, let first = segments.first else {return SIMD2<Double>.zero}
-        guard t < 1 else {return last.end}
-        guard t >= 0 else {return first.start}
-        
-        let T = t * Double(segments.count)
-        let i = Int(T)
-        let v = T.remainder(dividingBy: 1)
-        
-        let curve = segments[i]
-        
-        return curve(t: v)
+    public var endPoints:[SIMD2<Double>] {
+        cubicCurves.endPoints
     }
 }
 
-extension CubicSpline {
-    public var endPoints:[SIMD2<Double>] {
-        segments.endPoints
+enum LaPackError:Error {
+    case leadingMinorNotPositiveDefinit(Int)
+    case illegalValue(Int)
+    case impossibleError
+}
+
+extension LaPackError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .leadingMinorNotPositiveDefinit(let i):
+            return NSLocalizedString("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.", comment: "LaPack Error")
+        case .illegalValue(let i):
+            return NSLocalizedString("Error: the \(i)-th argument had an illegal value.", comment: "LaPack Error")
+        case .impossibleError:
+            return NSLocalizedString("This error is impossible. If you are seeing this you do not exist.", comment: "Impossible error.")
+        }
     }
 }

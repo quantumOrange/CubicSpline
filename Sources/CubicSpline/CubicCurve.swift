@@ -61,6 +61,4 @@ public struct CubicCurve {
     }
 }
 
-extension CubicCurve {
-    public func callAsFunction(t:Double) -> SIMD2<Double> { f(t) }
-}
+

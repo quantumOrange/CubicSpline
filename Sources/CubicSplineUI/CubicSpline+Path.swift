@@ -14,11 +14,11 @@ extension CubicSpline {
     var path:Path {
         var path = Path()
         
-        guard let start = segments.first?.start.cgPoint else { return path }
+        guard let start = cubicCurves.first?.start.cgPoint else { return path }
         
         path.move(to:start)
         
-        for curve in segments {
+        for curve in cubicCurves {
             path.addCurve(to: curve.end.cgPoint, control1: curve.bezierControlPoint1.cgPoint, control2: curve.bezierControlPoint2.cgPoint)
         }
 
