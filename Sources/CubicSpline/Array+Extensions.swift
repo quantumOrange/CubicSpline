@@ -1,5 +1,5 @@
 //
-//  Array+SIMD2.swift
+//  Array+Extensons.swift
 //  Spline
 //
 //  Created by David Crooks on 16/07/2021.

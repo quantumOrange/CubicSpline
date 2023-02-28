@@ -1,3 +1,10 @@
+//
+//  CubicSpline.swift
+//
+//
+//  Created by David Crooks on 21/02/2023.
+//
+
 import Foundation
 import simd
 

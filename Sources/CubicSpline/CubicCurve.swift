@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CubicCurve.swift
 //  
 //
 //  Created by David Crooks on 21/02/2023.
