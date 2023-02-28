@@ -11,7 +11,6 @@ func getSinusoidalPoints(n:Int) -> [SIMD2<Double>]{
     }
 }
 
-
 class CubicSplineTests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -47,7 +46,7 @@ class CubicSplineTests: XCTestCase {
         
         var previous:CubicCurve?
         
-        //Positions should agree at the endpoints of the pieces
+        // Positions should agree at the endpoints of the pieces
         for piece in pieces {
             if let pre = previous {
                 XCTAssertEqual(pre.f(1).x, piece.f(0).x, accuracy:accuracy)
@@ -84,8 +83,6 @@ class CubicSplineTests: XCTestCase {
             let _ = CubicSpline(points:points)
         }
     }
-    //10, 0.0000978 s
-    
     
     func testPerformanceCubicSpline100() throws {
         let points = getSinusoidalPoints(n:100)
@@ -93,11 +90,7 @@ class CubicSplineTests: XCTestCase {
             let _ = CubicSpline(points:points)
         }
     }
-    //100, 0.000516 s
-    
-    
-    
-    
+
     func testPerformanceCubicSpline1000() throws {
         let points = getSinusoidalPoints(n:1000)
         self.measure {
@@ -105,10 +98,6 @@ class CubicSplineTests: XCTestCase {
         }
     }
    
-    
-    
-    
-    
     func testPerformanceCubicSpline10000() throws {
         let points = getSinusoidalPoints(n:10000)
         self.measure {
@@ -129,5 +118,6 @@ class CubicSplineTests: XCTestCase {
 // 10, 0.0000978 s
 // 100, 0.000516 s
 // 1000, 0.00297 s
+// 10000, 0.0195 s
 // 100000, 0.178 s
 // 1000000,  1.77 s

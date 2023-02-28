@@ -3,14 +3,25 @@
 
 import PackageDescription
 
-var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMajor(from: "1.0.0")),
+var packageDependencies: [Package.Dependency] = []
+
+var targetDependencies:[Target.Dependency] =  []
+
+var targets:[Target] =  [
+    .target(
+        name: "CubicSpline",
+        dependencies:targetDependencies),
+    .testTarget(
+        name: "CubicSplineTests",
+        dependencies: ["CubicSpline"]),
 ]
 
-var targetDependencies:[Target.Dependency] =  [.product(name: "Algorithms", package: "swift-algorithms")]
-
 #if os(Linux)
-   packageDependencies.append(.package(url: "https://github.com/indisoluble/CLapacke-Linux", .upToNextMajor(from: "1.0.0")))
+    packageDependencies.append(.package(url: "https://github.com/indisoluble/CLapacke-Linux", .upToNextMajor(from: "1.0.0")))
+#else
+    targets.append(.target(
+        name: "CubicSplineUI",
+        dependencies: ["CubicSpline"]))
 #endif
 
 let package = Package(
@@ -22,15 +33,5 @@ let package = Package(
        .library(name: "CubicSplineUI", targets: ["CubicSplineUI"]),
     ],
     dependencies: packageDependencies,
-    targets: [
-        .target(
-            name: "CubicSpline",
-            dependencies:targetDependencies),
-        .target(
-            name: "CubicSplineUI",
-            dependencies: ["CubicSpline"]),
-        .testTarget(
-            name: "CubicSplineTests",
-            dependencies: ["CubicSpline"]),
-    ]
+    targets: targets
 )

@@ -53,7 +53,7 @@ public struct CubicCurve {
         2 * c + 6 * d * t
     }
     
-    init(start: SIMD2<Double>, end: SIMD2<Double>, controlStart c_start: SIMD2<Double>, controlEnd c_end: SIMD2<Double> ) {
+    init(start: SIMD2<Double>, end: SIMD2<Double>, derivativeStart c_start: SIMD2<Double>, derivativeEnd c_end: SIMD2<Double> ) {
         self.a = start
         self.b = c_start
         self.c = 3 * (end - start) - 2 * c_start - c_end

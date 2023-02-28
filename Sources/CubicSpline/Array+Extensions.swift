@@ -21,3 +21,19 @@ extension Array where Element==SIMD2<Double> {
         map { $0.x } + map { $0.y }
     }
 }
+
+extension Array where Element==CubicCurve {
+    var endPoints:[SIMD2<Double>] {
+        guard let last = last else {return []}
+        var points = map { $0.start }
+        points.append(last.end)
+        return points
+    }
+}
+
+extension Array {
+    func adjacentPairs()  ->  Zip2Sequence<[Element], Array<Element>.SubSequence> {
+        zip(self, self.dropFirst())
+    }
+}
+

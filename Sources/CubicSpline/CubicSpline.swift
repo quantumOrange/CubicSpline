@@ -62,20 +62,20 @@ public struct CubicSpline {
             }
         }
         
-        guard let control = try? Self.solve(vec) else {
+        guard let derivatives = try? Self.solve(vec) else {
             self.cubicCurves = []
             return }
         
         
-        let pointPairs = zip(points, points.dropFirst())
-        let controlPairs = zip(control, control.dropFirst())
+        let pointPairs =  points.adjacentPairs()
+        let derivativePairs = derivatives.adjacentPairs()
       
-        let zippedPairs = zip(pointPairs,controlPairs)
+        let zippedPairs = zip(pointPairs,derivativePairs)
         
         self.cubicCurves = zippedPairs.map { pointPairs, controlPairs in
             let (start, end) =  pointPairs
             let (c_start, c_end) = controlPairs
-            return CubicCurve(start: start, end: end, controlStart: c_start, controlEnd: c_end)
+            return CubicCurve(start: start, end: end, derivativeStart: c_start, derivativeEnd: c_end)
         }
     }
     
@@ -151,3 +151,4 @@ extension LaPackError: LocalizedError {
         }
     }
 }
+
