@@ -11,6 +11,10 @@ import CubicSpline
 @available(iOS 13.0, macOS 12.0, *)
 public struct SplineView: View {
     let spline:CubicSpline
+  
+    public init(spline:CubicSpline) {
+      self.spline = spline
+    }
     
     public var body: some View {
         SplineShape(spline:spline)
