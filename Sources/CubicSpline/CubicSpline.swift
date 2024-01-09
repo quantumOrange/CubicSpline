@@ -8,12 +8,12 @@
 import Foundation
 import simd
 
-#if os(OSX) || os(iOS)
-    import Accelerate
-    typealias LAInt = __CLPK_integer
-#elseif os(Linux)
+#if os(Linux)
     import CLapacke_Linux
     typealias LAInt = Int32
+#else
+    import Accelerate
+    typealias LAInt = __CLPK_integer
 #endif
 
 public struct CubicSpline {
