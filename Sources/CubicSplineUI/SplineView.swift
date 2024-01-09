@@ -12,6 +12,10 @@ import CubicSpline
 public struct SplineView: View {
     let spline:CubicSpline
     
+    public init(spline: CubicSpline) {
+        self.spline = spline
+    }
+    
     public var body: some View {
         SplineShape(spline:spline)
             .stroke()
