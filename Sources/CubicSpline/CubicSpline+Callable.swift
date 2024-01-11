@@ -19,7 +19,7 @@ extension CubicSpline {
         
         let T = t * Double(cubicCurves.count)
         let i = Int(T)
-        let v = T.remainder(dividingBy: 1)
+        let v = T - Double(i)
         
         let curve = cubicCurves[i]
         
