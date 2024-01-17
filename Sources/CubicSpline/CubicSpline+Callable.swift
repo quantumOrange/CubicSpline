@@ -8,7 +8,7 @@
 import Foundation
 
 extension CubicCurve {
-    public func callAsFunction(t:Double) -> SIMD2<Double> { f(t) }
+    public func callAsFunction(t:Double) -> S { f(t) }
 }
 
 extension CubicSpline {

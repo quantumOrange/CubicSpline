@@ -18,7 +18,7 @@ import simd
 
 public struct CubicSpline {
     public var closed:Bool
-    public var cubicCurves:[CubicCurve]
+    public var cubicCurves:[CubicCurve<SIMD2<Double>>]
     
     public init() {
         self.cubicCurves = []
@@ -116,7 +116,8 @@ public struct CubicSpline {
         // The lapack function dptsv will solve this efficiently:
         // http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
         
-        var b = v.toDoubleArray()
+        var b = SIMD2.toDoubleArray(array: v)
+        //var b = v.toDoubleArray()
         
         var diaganol = Array<Double>(repeating: 4, count: v.count)
         diaganol[0] = 2
@@ -136,7 +137,8 @@ public struct CubicSpline {
         
         switch info {
             case 0:
-                return b.toSIMD2Array()
+                return SIMD2.toSIMDArray(array: b)
+                //return b.toSIMD2Array()
             case let i where i > 0:
                 throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
                // assertionFailure("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.")
@@ -189,7 +191,8 @@ public struct CubicSpline {
             print(str)
         }
         print("-------")
-        var b = v.toDoubleArray()
+        var b = SIMD2.toDoubleArray(array: v)
+        //var b = v.toDoubleArray()
         
        // _ = cblas_dcopy(Int32(v.count), &b, 1, &ret, 1)
         var nrhs:LAInt = 2
@@ -216,7 +219,8 @@ public struct CubicSpline {
          */
         switch info {
             case 0:
-                return b.toSIMD2Array()
+                return SIMD2.toSIMDArray(array: b)
+                //return b.toSIMD2Array()
             case let i where i > 0:
                 throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
                // assertionFailure("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.")
@@ -254,34 +258,4 @@ extension LaPackError: LocalizedError {
 }
 
 
-struct Matrix {
-    let rows: Int, columns: Int
-    var grid: [Double]
-    init(rows: Int, columns: Int) {
-        self.rows = rows
-        self.columns = columns
-        grid = Array(repeating: 0.0, count: rows * columns)
-    }
-    func indexIsValid(row: Int, column: Int) -> Bool {
-        return row >= 0 && row < rows && column >= 0 && column < columns
-    }
-    subscript(row: Int, column: Int) -> Double {
-        get {
-            assert(indexIsValid(row: row, column: column), "Index out of range")
-            return grid[(row * columns) + column]
-        }
-        set {
-            assert(indexIsValid(row: row, column: column), "Index out of range")
-            grid[(row * columns) + column] = newValue
-        }
-    }
-}
 
-extension Array {
-    func cyclicAdjacentPairs() ->  Zip2Sequence<[Element], ArraySlice<Element>> {
-        guard let first else { return adjacentPairs() }
-        var arr = self
-        arr.append(first)
-        return arr.adjacentPairs()
-    }
-}

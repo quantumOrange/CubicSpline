@@ -34,7 +34,9 @@ class CubicSplineTests: XCTestCase {
         
         let points = getSinusoidalPoints(n:10)
         
-        let newPoints = points.toDoubleArray().toSIMD2Array()
+        
+        let newPoints = SIMD2.toSIMDArray(array: SIMD2.toDoubleArray(array: points))
+        //let newPoints = points.toDoubleArray().toSIMD2Array()
         
         for (p,q) in zip(points,newPoints) {
             XCTAssertEqual(p.x, q.x)
@@ -65,7 +67,7 @@ class CubicSplineTests: XCTestCase {
         XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
-        var previous:CubicCurve?
+        var previous:CubicCurve<SIMD2<Double>>?
         
         // Positions should agree at the endpoints of the pieces
         for piece in pieces {
@@ -125,7 +127,7 @@ class CubicSplineTests: XCTestCase {
         XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
-        var previous:CubicCurve?
+        var previous:CubicCurve<SIMD2<Double>>?
         
         // Positions should agree at the endpoints of the pieces
         for piece in pieces {
