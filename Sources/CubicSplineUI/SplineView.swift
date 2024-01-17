@@ -38,7 +38,7 @@ fileprivate let points_2:[SIMD2<Double>] = [[0.9,0.5],
                                           [1.0,1.0],
                                           [1.4,0.3],
                                             [2,0.45],
-                                            [1.7,1.0]]
+                                            [1.1,0.6]]
 
 
 @available(iOS 13.0, macOS 12.0, *)
@@ -48,7 +48,7 @@ struct SplineView_Previews: PreviewProvider {
             SplineView(spline:CubicSpline(points:points) )
                 .padding()
               
-            SplineView(spline:CubicSpline(points:points_2) )
+            SplineView(spline:CubicSpline(points:points_2, closed: true) )
                 .padding()
                
         }
