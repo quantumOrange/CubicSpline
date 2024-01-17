@@ -25,5 +25,3 @@ extension CubicSpline {
         return path
     }
 }
-
-

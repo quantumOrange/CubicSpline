@@ -8,12 +8,22 @@
 import Foundation
 import simd
 
-#if os(OSX) || os(iOS)
-    import Accelerate
-#elseif os(Linux)
+
+#if os(Linux)
     import CLapacke_Linux
+#else
+    import Accelerate
 #endif
 
+/*
+#if os(Linux)
+    import CLapacke_Linux
+    typealias LAInt = Int32
+#else
+    import Accelerate
+    typealias LAInt = __CLPK_integer
+#endif
+*/
 public struct CubicSpline3D {
     
     public var cubicCurves:[CubicCurve3D]

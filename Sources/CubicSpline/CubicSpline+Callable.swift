@@ -19,7 +19,7 @@ extension CubicSpline {
         
         let T = t * Double(cubicCurves.count)
         let i = Int(T)
-        let v = T.remainder(dividingBy: 1)
+        let v = T - Double(i)
         
         let curve = cubicCurves[i]
         
@@ -37,11 +37,26 @@ extension CubicSpline3D {
         
         let T = t * Double(cubicCurves.count)
         let i = Int(T)
-        let v = T.remainder(dividingBy: 1)
+        let v = T - Double(i)
         
         let curve = cubicCurves[i]
         
         return curve.tubePoint(s:s,t:v,radius:r)
+    }
+    
+    public func point(t:Double)  -> SIMD3<Double>
+    {
+        guard let last = cubicCurves.last, let first = cubicCurves.first else {return SIMD3<Double>.zero}
+        guard t < 1 else { return last.f(1)}
+        guard t >= 0 else { return first.f(0)}
+        
+        let T = t * Double(cubicCurves.count)
+        let i = Int(T)
+        let v = T - Double(i)
+        
+        let curve = cubicCurves[i]
+        
+        return curve.f(v)
     }
 }
 
