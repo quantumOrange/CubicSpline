@@ -10,9 +10,9 @@ import CubicSpline
 
 @available(iOS 13.0, macOS 12.0, *)
 public struct SplineView: View {
-    let spline:CubicSpline
+    let spline:CubicSpline<SIMD2<Double>>
     
-    public init(spline: CubicSpline) {
+    public init(spline: CubicSpline<SIMD2<Double>>) {
         self.spline = spline
     }
     

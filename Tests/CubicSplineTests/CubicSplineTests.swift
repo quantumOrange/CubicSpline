@@ -49,7 +49,7 @@ class CubicSplineTests: XCTestCase {
         
         let points = getSinusoidalPoints(n:10)
         
-        let spline = CubicSpline(points:points)
+        let spline = CubicSpline<SIMD2<Double>>(points:points)
         
         XCTAssert(spline.cubicCurves.count == points.count - 1, " \(spline.cubicCurves.count) != \(points.count) -1")
         let pieces = spline.cubicCurves
@@ -104,7 +104,7 @@ class CubicSplineTests: XCTestCase {
         
         let points = getCirclePoints(n:10)
         //do {
-            let spline = CubicSpline(points:points,closed: true)
+            let spline = CubicSpline<SIMD2<Double>>(points:points,closed: true)
        // }
        // catch {
        //     print(error)
@@ -163,35 +163,35 @@ class CubicSplineTests: XCTestCase {
     func testPerformanceCubicSpline10() throws {
         let points = getSinusoidalPoints(n:10)
         self.measure {
-            let _ = CubicSpline(points:points)
+            let _ = CubicSpline<SIMD2<Double>>(points:points)
         }
     }
     
     func testPerformanceCubicSpline100() throws {
         let points = getSinusoidalPoints(n:100)
         self.measure {
-            let _ = CubicSpline(points:points)
+            let _ = CubicSpline<SIMD2<Double>>(points:points)
         }
     }
 
     func testPerformanceCubicSpline1000() throws {
         let points = getSinusoidalPoints(n:1000)
         self.measure {
-            let _ = CubicSpline(points:points)
+            let _ = CubicSpline<SIMD2<Double>>(points:points)
         }
     }
    
     func testPerformanceCubicSpline10000() throws {
         let points = getSinusoidalPoints(n:10000)
         self.measure {
-            let _ = CubicSpline(points:points)
+            let _ = CubicSpline<SIMD2<Double>>(points:points)
         }
     }
     
     func testPerformanceCubicSpline100000() throws {
         let points = getSinusoidalPoints(n:100000)
         self.measure {
-            let _ = CubicSpline(points:points)
+            let _ = CubicSpline<SIMD2<Double>>(points:points)
         }
     }
        

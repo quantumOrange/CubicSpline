@@ -16,7 +16,7 @@ import simd
     typealias LAInt = __CLPK_integer
 #endif
 
-public struct CubicSpline {
+public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
     public var closed:Bool
     public var cubicCurves:[CubicCurve<SIMD2<Double>>]
     
@@ -124,7 +124,7 @@ public struct CubicSpline {
         diaganol[v.count-1] = 2
         var subDiagonal = Array<Double>(repeating: 1, count: v.count - 1)
         var n:LAInt = Int32(v.count)
-        var nrhs:LAInt = 2
+        var nrhs:LAInt = LAInt(SIMD2<Double>.scalarCount)
         var info:LAInt = 0
         
         _ = withUnsafeMutablePointer(to: &n) { N in
@@ -195,7 +195,7 @@ public struct CubicSpline {
         //var b = v.toDoubleArray()
         
        // _ = cblas_dcopy(Int32(v.count), &b, 1, &ret, 1)
-        var nrhs:LAInt = 2
+        var nrhs:LAInt = LAInt(SIMD2<Double>.scalarCount)
         var info:LAInt = 0
         
         _ = withUnsafeMutablePointer(to: &nn) { N in

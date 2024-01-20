@@ -26,7 +26,7 @@ This view will stretch the spline to fit the available space. If that is not do 
 ``` swift
 let path = spline.path
 ```
-This path will be at the same coordinate system as the points used to create the spline. You can then transform the path as needed and construct your own shape.
+This path will be in the same coordinate system as the points used to create the spline. You can then transform the path as needed and construct your own shape.
 
 The spline is callable, with a value in the range 0...1 :
 
