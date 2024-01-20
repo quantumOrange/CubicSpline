@@ -103,16 +103,12 @@ class CubicSplineTests: XCTestCase {
     func testClosedSpline()  {
         
         let points = getCirclePoints(n:10)
-        //do {
-            let spline = CubicSpline<SIMD2<Double>>(points:points,closed: true)
-       // }
-       // catch {
-       //     print(error)
-       //     XCTAssert(false)
-       // }
         
-        XCTAssert(spline.cubicCurves.count == points.count - 1, " \(spline.cubicCurves.count) != \(points.count) -1")
-        let pieces = spline.cubicCurves
+        let spline = CubicSpline<SIMD2<Double>>(points:points,closed: true)
+      
+        
+        XCTAssert(spline.cubicCurves.count == points.count , " \(spline.cubicCurves.count) != \(points.count) ")
+        var pieces = spline.cubicCurves
         
         guard let first = pieces.first, let last = pieces.last else {XCTAssert(false); return }
        
@@ -128,6 +124,9 @@ class CubicSplineTests: XCTestCase {
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
         var previous:CubicCurve<SIMD2<Double>>?
+        
+        // Because the spline is closed, we also need to check that the start of the first cublic curve matches position and derivitives of the last cubic curve. To this end, we append the first curve to the end of the array.
+        pieces.append(first)
         
         // Positions should agree at the endpoints of the pieces
         for piece in pieces {
@@ -158,6 +157,9 @@ class CubicSplineTests: XCTestCase {
             previous = piece
         }
  
+      
+
+        
     }
     
     func testPerformanceCubicSpline10() throws {

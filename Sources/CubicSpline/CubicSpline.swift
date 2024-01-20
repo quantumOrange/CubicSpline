@@ -81,7 +81,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         }
         
         let pointPairs =  closed ? points.cyclicAdjacentPairs() : points.adjacentPairs()
-        let derivativePairs = closed ? derivatives.cyclicAdjacentPairs() : points.adjacentPairs()
+        let derivativePairs = closed ? derivatives.cyclicAdjacentPairs() : derivatives.adjacentPairs()
       
         let zippedPairs = zip(pointPairs,derivativePairs)
         
@@ -105,13 +105,13 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
         
-        //  2   1   0   0   0 ...    0
-        //  1   4   1   0   0 ...    0
-        //  0   1   4   1   0 ...    0
-        //  0   0   1   4   1 ...    0
+        //  2   1   0   0   0    ...    0
+        //  1   4   1   0   0    ...    0
+        //  0   1   4   1   0    ...    0
+        //  0   0   1   4   1    ...    0
         // ...
-        //  0   0   0   0 ...   1   4   1
-        //  0   0   0   0 ...   0   1   2
+        //  0   0   0   0  ...  1   4   1
+        //  0   0   0   0  ...  0   1   2
         
         // The lapack function dptsv will solve this efficiently:
         // http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
@@ -154,19 +154,19 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         // We need to solve the matrix equation M * d = v
         // where M is the matrix:
         
-        //  4   1   0   0   0 ...    1
-        //  1   4   1   0   0 ...    0
-        //  0   1   4   1   0 ...    0
-        //  0   0   1   4   1 ...    0
+        //  4   1   0   0   0    ...    1
+        //  1   4   1   0   0    ...    0
+        //  0   1   4   1   0    ...    0
+        //  0   0   1   4   1    ...    0
         // ...
-        //  0   0   0   0    1   4   1
-        //  1   0   0   0    0   1   4
+        //  0   0   0   0  ...  1   4   1
+        //  1   0   0   0  ...  0   1   4
         let n = v.count
         var nn = Int32(n)
        // var ret = [Double](repeating: Double(), count: 2*v.count)
         var ipiv = Array<Int32>(repeating: 0, count: n)
         //var ipiv:Int32 = 0
-        var a = Array<Double>(repeating: 0, count:n*n)
+        //var a = Array<Double>(repeating: 0, count:n*n)
        
         var M = Matrix(rows: n,columns: n)
         
