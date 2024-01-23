@@ -8,6 +8,12 @@
 import Foundation
 import simd
 
+
+typealias CubicCurve2D = CubicCurve<SIMD2<Double>>
+typealias CubicCurve3D = CubicCurve<SIMD3<Double>>
+typealias CubicCurve4D = CubicCurve<SIMD4<Double>>
+
+
 #if os(Linux)
     import CLapacke_Linux
     typealias LAInt = Int32
@@ -18,14 +24,14 @@ import simd
 
 public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
     public var closed:Bool
-    public var cubicCurves:[CubicCurve<SIMD2<Double>>]
+    public var cubicCurves:[CubicCurve<S>]
     
     public init() {
         self.cubicCurves = []
         self.closed = false
     }
     
-    mutating func append(points:[SIMD2<Double>]) {
+    mutating func append(points:[S]) {
         guard cubicCurves.count > 1 else {
             let allPoints = cubicCurves.endPoints + points
             let newSpline = CubicSpline(points:allPoints )
@@ -45,13 +51,13 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         cubicCurves.append(contentsOf:newSpline.cubicCurves.dropFirst())
     }
     
-    public init(points:[SIMD2<Double>], closed: Bool = false) {
+    public init(points:[S], closed: Bool = false) {
         // The maths for the following calculation can be found here:
         // https://mathworld.wolfram.com/CubicSpline.html
         self.closed = closed
         let n = points.count
         
-        var vec:[SIMD2<Double>] = []
+        var vec:[S] = []
         
         guard (n >= 2) else {
             self.cubicCurves = []
@@ -69,8 +75,8 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
                 vec.append( 3 * ( points[i + 1] - points[i-1] ))
             }
         }
-        print("OK1")
-        var derivatives:[SIMD2<Double>] = []
+        
+        var derivatives:[S] = []
         do {
             derivatives = try Self.solve(vec, closed: closed)
         }
@@ -92,7 +98,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         }
     }
     
-    static func solve(_ v:[SIMD2<Double>], closed:Bool) throws -> [SIMD2<Double>] {
+    static func solve(_ v:[S], closed:Bool) throws -> [S] {
         if closed {
             return try solveClosed(v)
         }
@@ -101,7 +107,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         }
     }
     
-    static func solveOpen(_ v:[SIMD2<Double>]) throws -> [SIMD2<Double>] {
+    static func solveOpen(_ v:[S]) throws -> [S] {
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
         
@@ -116,7 +122,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         // The lapack function dptsv will solve this efficiently:
         // http://www.netlib.org/lapack/explore-html/d9/dc4/group__double_p_tsolve_gaf1bd4c731915bd8755a4da8086fd79a8.html#gaf1bd4c731915bd8755a4da8086fd79a8
         
-        var b = SIMD2.toDoubleArray(array: v)
+        var b = S.toDoubleArray(array: v)
         //var b = v.toDoubleArray()
         
         var diaganol = Array<Double>(repeating: 4, count: v.count)
@@ -124,7 +130,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         diaganol[v.count-1] = 2
         var subDiagonal = Array<Double>(repeating: 1, count: v.count - 1)
         var n:LAInt = Int32(v.count)
-        var nrhs:LAInt = LAInt(SIMD2<Double>.scalarCount)
+        var nrhs:LAInt = LAInt(S.scalarCount)
         var info:LAInt = 0
         
         _ = withUnsafeMutablePointer(to: &n) { N in
@@ -137,7 +143,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
         switch info {
             case 0:
-                return SIMD2.toSIMDArray(array: b)
+                return S.toSIMDArray(array: b)
                 //return b.toSIMD2Array()
             case let i where i > 0:
                 throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
@@ -150,7 +156,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
     }
     
-    static func solveClosed(_ v:[SIMD2<Double>]) throws -> [SIMD2<Double>] {
+    static func solveClosed(_ v:[S]) throws -> [S] {
         // We need to solve the matrix equation M * d = v
         // where M is the matrix:
         
@@ -191,11 +197,11 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
             print(str)
         }
         print("-------")
-        var b = SIMD2.toDoubleArray(array: v)
+        var b = S.toDoubleArray(array: v)
         //var b = v.toDoubleArray()
         
        // _ = cblas_dcopy(Int32(v.count), &b, 1, &ret, 1)
-        var nrhs:LAInt = LAInt(SIMD2<Double>.scalarCount)
+        var nrhs:LAInt = LAInt(S.scalarCount)
         var info:LAInt = 0
         
         _ = withUnsafeMutablePointer(to: &nn) { N in
@@ -219,7 +225,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
          */
         switch info {
             case 0:
-                return SIMD2.toSIMDArray(array: b)
+                return S.toSIMDArray(array: b)
                 //return b.toSIMD2Array()
             case let i where i > 0:
                 throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
@@ -233,7 +239,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
 }
 
 extension CubicSpline {
-    public var endPoints:[SIMD2<Double>] {
+    public var endPoints:[S] {
         cubicCurves.endPoints
     }
 }

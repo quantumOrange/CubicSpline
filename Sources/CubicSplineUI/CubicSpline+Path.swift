@@ -10,7 +10,7 @@ import SwiftUI
 import CubicSpline
 
 @available(iOS 13.0, macOS 10.15, *)
-extension CubicSpline {
+extension CubicSpline where S==SIMD2<Double>{
     public var path:Path {
         var path = Path()
         

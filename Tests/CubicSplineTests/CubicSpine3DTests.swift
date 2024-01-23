@@ -50,7 +50,7 @@ final class CubicSpine3DTests: XCTestCase {
         
         let points = getSpiralPoints(n:10)
         
-        let spline = CubicSpline3D(points:points)
+        let spline = CubicSpline(points:points)
         
         XCTAssert(spline.cubicCurves.count == points.count - 1, " \(spline.cubicCurves.count) != \(points.count) -1")
         let pieces = spline.cubicCurves
@@ -68,7 +68,7 @@ final class CubicSpine3DTests: XCTestCase {
         XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
         XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
         
-        var previous:CubicCurve3D?
+        var previous:CubicCurve<SIMD3<Double>>?
         
         // Positions should agree at the endpoints of the pieces
         for piece in pieces {
