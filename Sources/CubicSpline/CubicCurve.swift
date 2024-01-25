@@ -49,7 +49,7 @@ public struct CubicCurve<S:SIMD> where S.Scalar == Double {
         return r1 + r2
     }
     
-    func ddf(_ t:Double) -> S {
+    public func ddf(_ t:Double) -> S {
         2 * c + 6 * d * t
     }
     
@@ -59,6 +59,23 @@ public struct CubicCurve<S:SIMD> where S.Scalar == Double {
         self.c = 3 * (end - start) - 2 * c_start - c_end
         self.d = 2 * (start - end) + c_start + c_end
     }
+    
+    init(a: S, b: S, c: S, d: S) {
+        self.a = a
+        self.b = b
+        self.c = c
+        self.d = d
+    }
+    
+    
 }
 
 
+extension CubicCurve<SIMD3<Double>> {
+    public init(curve c:CubicCurve<SIMD2<Double>>, y:Double) {
+        self.a = [c.a.x,y,c.a.y]
+        self.b = [c.b.x,y,c.b.y]
+        self.c = [c.c.x,y,c.c.y]
+        self.d = [c.d.x,y,c.d.y]
+    }
+}

@@ -55,8 +55,14 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         // The maths for the following calculation can be found here:
         // https://mathworld.wolfram.com/CubicSpline.html
         self.closed = closed
-        let n = points.count
+        var points = points
         
+        //if let first = points.first,closed {
+        //    points.append(first)
+        //}
+        
+        let n = points.count
+
         var vec:[S] = []
         
         guard (n >= 2) else {
@@ -64,19 +70,36 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
             return
         }
         
-        for i in 0..<n  {
-            if i == 0 {
-                vec.append( 3 * ( points[1] - points[0] ))
+        if closed {
+            for i in 0..<n  {
+                if i == 0 {
+                    vec.append( 3 * ( points[1] - points[n-1] ))
+                }
+                else if i == n - 1 {
+                    vec.append( 3 * ( points[0] - points[n-2] ))
+                }
+                else {
+                    vec.append( 3 * ( points[i + 1] - points[i-1] ))
+                }
             }
-            else if i == n - 1 {
-                vec.append( 3 * ( points[n-1] - points[n-2] ))
-            }
-            else {
-                vec.append( 3 * ( points[i + 1] - points[i-1] ))
+        }
+        else {
+            for i in 0..<n  {
+                if i == 0 {
+                    vec.append( 3 * ( points[1] - points[0] ))
+                }
+                else if i == n - 1 {
+                    vec.append( 3 * ( points[n-1] - points[n-2] ))
+                }
+                else {
+                    vec.append( 3 * ( points[i + 1] - points[i-1] ))
+                }
             }
         }
         
+        
         var derivatives:[S] = []
+        
         do {
             derivatives = try Self.solve(vec, closed: closed)
         }
@@ -88,6 +111,8 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
         let pointPairs =  closed ? points.cyclicAdjacentPairs() : points.adjacentPairs()
         let derivativePairs = closed ? derivatives.cyclicAdjacentPairs() : derivatives.adjacentPairs()
+        //let pointPairs =   points.adjacentPairs()
+        //let derivativePairs = derivatives.adjacentPairs()
       
         let zippedPairs = zip(pointPairs,derivativePairs)
         
@@ -108,6 +133,9 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
     }
     
     static func solveOpen(_ v:[S]) throws -> [S] {
+        
+        
+        
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
         
@@ -156,6 +184,8 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
     }
     
+    
+    
     static func solveClosed(_ v:[S]) throws -> [S] {
         // We need to solve the matrix equation M * d = v
         // where M is the matrix:
@@ -188,6 +218,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         M[0,n-1] = 1
         M[n-1,0] = 1
         
+        /*
         print("-------")
         for i in 0..<n {
             var str = ""
@@ -197,6 +228,8 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
             print(str)
         }
         print("-------")
+        */
+        
         var b = S.toDoubleArray(array: v)
         //var b = v.toDoubleArray()
         

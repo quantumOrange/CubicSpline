@@ -13,12 +13,44 @@ func getSinusoidalPoints(n:Int) -> [SIMD2<Double>]{
 
 func getCirclePoints(n:Int) -> [SIMD2<Double>]{
     (0..<n).map {
-        Double($0)/Double(n-1)
+        Double($0)/Double(n)
     }.map {
         let theta = 2.0 * $0 * .pi
         return SIMD2<Double>(cos(theta), sin(theta) )
     }
 }
+
+fileprivate let trefoilPoints:[SIMD2<Double>] =
+     [ [-0.19,-0.39],
+     [-0.38,-0.35],
+     [-0.39,-0.13],
+     [-0.21,0.06],
+     [-0.00,0.11],
+     [0.21,0.06],
+     [0.41,-0.13],
+     [0.37,-0.36],
+     [0.19,-0.41],
+     [0.02,-0.29],
+     [-0.12,-0.14],
+     [-0.21,0.06],
+     [-0.19,0.29],
+     [0.01,0.42],
+     [0.19,0.28],
+     [0.21,0.06],
+     [0.14,-0.13],
+     [0.02,-0.29],
+       
+     ]
+
+fileprivate let loop:[SIMD2<Double>] = [[0.9,0.5],
+                                            [0.7,0],
+                                          [0.3,0.3],
+                                          [1.0,1.0],
+                                          [1.4,0.3],
+                                            [2,0.45],
+                                            [1.1,0.6],
+                                      
+]
 
 class CubicSplineTests: XCTestCase {
 
@@ -100,9 +132,29 @@ class CubicSplineTests: XCTestCase {
  
     }
     
-    func testClosedSpline()  {
+    func testClosedCircleSpline()  {
+        let pts = getCirclePoints(n: 10)
+        print(pts.count)
+        print("----")
+        for pt in pts {
+            print(pt)
+        }
+        print("----")
+        closedSplineTests(points:pts)
+    }
+    
+    func testClosedTrefoilSpline()  {
+        closedSplineTests(points:trefoilPoints)
+    }
+    
+    func testClosedLoopSpline()  {
+        closedSplineTests(points:loop)
+    }
+    
         
-        let points = getCirclePoints(n:10)
+    func closedSplineTests(points:[SIMD2<Double>])  {
+        //let points = trefoilPoints
+        //let points = getCirclePoints(n:10)
         
         let spline = CubicSpline<SIMD2<Double>>(points:points,closed: true)
       
@@ -113,15 +165,16 @@ class CubicSplineTests: XCTestCase {
         guard let first = pieces.first, let last = pieces.last else {XCTAssert(false); return }
        
         
-        let s = first.f(0)
-        let e = last.f(1)
+        let start = first.f(0)
+        let end = last.f(1)
         
         let accuracy = 0.01
         
-        XCTAssertEqual(s.x, points.first!.x, accuracy: accuracy)
-        XCTAssertEqual(s.y, points.first!.y, accuracy: accuracy)
-        XCTAssertEqual(e.x, points.last!.x,  accuracy: accuracy)
-        XCTAssertEqual(e.y, points.last!.y,  accuracy: accuracy)
+        XCTAssertEqual(start.x, points.first!.x, accuracy: accuracy)
+        XCTAssertEqual(start.y, points.first!.y, accuracy: accuracy)
+        
+        XCTAssertEqual(end.x, start.x,  accuracy: accuracy)
+        XCTAssertEqual(end.y, start.y,  accuracy: accuracy)
         
         var previous:CubicCurve<SIMD2<Double>>?
         
@@ -155,11 +208,7 @@ class CubicSplineTests: XCTestCase {
                 XCTAssertEqual(pre.ddf(1).y, piece.ddf(0).y, accuracy:accuracy)
             }
             previous = piece
-        }
- 
-      
-
-        
+        }    
     }
     
     func testPerformanceCubicSpline10() throws {

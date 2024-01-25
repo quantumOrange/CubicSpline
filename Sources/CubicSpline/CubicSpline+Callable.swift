@@ -28,6 +28,9 @@ extension CubicSpline {
     }
 }
 
+
+/*
+
 extension CubicCurve  where  S==SIMD3<Double> {
     public func tubePoint(s:Double,t:Double, radius r:Double ) -> (position:SIMD3<Double>,normal:SIMD3<Double>) {
         let n1 = normalize(ddf(t))
@@ -75,3 +78,4 @@ extension CubicSpline where S==SIMD3<Double> {
 }
 
 
+*/
