@@ -10,7 +10,7 @@ import CubicSpline
 
 @available(iOS 13.0, macOS 10.15, *)
 struct SplinePointsShape:Shape {
-    let spline:CubicSpline
+    let spline:CubicSpline<SIMD2<Double>>
    
     let radius:CGFloat
     
@@ -26,7 +26,7 @@ struct SplinePointsShape:Shape {
     }
 }
 
-fileprivate let spline = CubicSpline(points: [[0.0,1.0],
+fileprivate let spline = CubicSpline<SIMD2<Double>>(points: [[0.0,1.0],
                                             [0.2,0.3],
                                           [1.0,0.0],
                                             [1.4,0.6],

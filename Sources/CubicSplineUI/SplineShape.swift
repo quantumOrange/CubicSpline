@@ -11,7 +11,7 @@ import CubicSpline
 
 @available(iOS 13.0, macOS 10.15, *)
 struct SplineShape : Shape {
-    let spline:CubicSpline
+    let spline:CubicSpline<SIMD2<Double>>
     
     func path(in rect: CGRect) -> Path {
         let path = spline.path

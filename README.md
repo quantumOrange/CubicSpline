@@ -26,7 +26,7 @@ This view will stretch the spline to fit the available space. If that is not do 
 ``` swift
 let path = spline.path
 ```
-This path will be at the same coordinate system as the points used to create the spline. You can then transform the path as needed and construct your own shape.
+This path will be in the same coordinate system as the points used to create the spline. You can then transform the path as needed and construct your own shape.
 
 The spline is callable, with a value in the range 0...1 :
 
@@ -41,9 +41,19 @@ You can get an array of cubic curves, which are also callable in the range 0...1
     let v = curve(t: 0.5)
 ```
 
-
 ![Spline](./imgs/spline_example_2.png)
 
+### Closed Splines
+
+To create a closed spline from an array of points just pass `true` for closed: 
+``` swift
+    let spline = CubicSpline(points:points, closed:true)
+```
+![Spline](./imgs/closed-spline.png)
+
+
+### Higher Dimensions
+CubicSpline also supports splines in 3 and higher dimensions. All SIMD types where the scalar is a Double will work.
 
 ## Performance
 

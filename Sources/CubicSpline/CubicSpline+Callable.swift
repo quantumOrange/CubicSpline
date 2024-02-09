@@ -6,14 +6,15 @@
 //
 
 import Foundation
+import simd
 
 extension CubicCurve {
-    public func callAsFunction(t:Double) -> SIMD2<Double> { f(t) }
+    public func callAsFunction(t:Double) -> S { f(t) }
 }
 
 extension CubicSpline {
-    public func callAsFunction(t:Double) -> SIMD2<Double> {
-        guard let last = cubicCurves.last, let first = cubicCurves.first else {return SIMD2<Double>.zero}
+    public func callAsFunction(t:Double) -> S {
+        guard let last = cubicCurves.last, let first = cubicCurves.first else {return S.zero}
         guard t < 1 else {return last.end}
         guard t >= 0 else {return first.start}
         
