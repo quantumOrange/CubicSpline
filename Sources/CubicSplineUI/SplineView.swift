@@ -41,7 +41,7 @@ fileprivate let loop:[SIMD2<Double>] = [[0.9,0.5],
                                           [1.4,0.3],
                                             [2,0.45],
                                             [1.1,0.6],
-                                          //  [0.9,0.5]
+                                          
 ]
 
 
@@ -63,7 +63,7 @@ fileprivate let trefoil:[SIMD2<Double>] = [ [-0.19,-0.39],
                                              [0.21,0.06],
                                              [0.14,-0.13],
                                              [0.02,-0.29],
-                                          //  [-0.19,-0.39]
+                                          
 ]
 
 @available(iOS 13.0, macOS 12.0, *)
@@ -73,7 +73,7 @@ struct SplineView_Previews: PreviewProvider {
             
             SplineView(spline:CubicSpline(points:points) )
                 .padding()
-              
+            
             SplineView(spline:CubicSpline(points:trefoil, closed: true) )
                 .padding()
             

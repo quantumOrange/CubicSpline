@@ -41,9 +41,19 @@ You can get an array of cubic curves, which are also callable in the range 0...1
     let v = curve(t: 0.5)
 ```
 
-
 ![Spline](./imgs/spline_example_2.png)
 
+### Closed Splines
+
+To create a closed spline from an array of points just pass `true` for closed: 
+``` swift
+    let spline = CubicSpline(points:points, closed:true)
+```
+![Spline](./imgs/closed-spline.png)
+
+
+### Higher Dimensions
+CubicSpline also supports splines in 3 and higher dimensions. All SIMD types where the scalar is a Double will work.
 
 ## Performance
 

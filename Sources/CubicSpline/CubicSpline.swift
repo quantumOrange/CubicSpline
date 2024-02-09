@@ -8,11 +8,9 @@
 import Foundation
 import simd
 
-
-typealias CubicCurve2D = CubicCurve<SIMD2<Double>>
-typealias CubicCurve3D = CubicCurve<SIMD3<Double>>
-typealias CubicCurve4D = CubicCurve<SIMD4<Double>>
-
+public typealias CubicCurve2D = CubicCurve<SIMD2<Double>>
+public typealias CubicCurve3D = CubicCurve<SIMD3<Double>>
+public typealias CubicCurve4D = CubicCurve<SIMD4<Double>>
 
 #if os(Linux)
     import CLapacke_Linux
@@ -55,12 +53,7 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         // The maths for the following calculation can be found here:
         // https://mathworld.wolfram.com/CubicSpline.html
         self.closed = closed
-        var points = points
-        
-        //if let first = points.first,closed {
-        //    points.append(first)
-        //}
-        
+       
         let n = points.count
 
         var vec:[S] = []
@@ -111,8 +104,6 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
         let pointPairs =  closed ? points.cyclicAdjacentPairs() : points.adjacentPairs()
         let derivativePairs = closed ? derivatives.cyclicAdjacentPairs() : derivatives.adjacentPairs()
-        //let pointPairs =   points.adjacentPairs()
-        //let derivativePairs = derivatives.adjacentPairs()
       
         let zippedPairs = zip(pointPairs,derivativePairs)
         
@@ -133,9 +124,6 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
     }
     
     static func solveOpen(_ v:[S]) throws -> [S] {
-        
-        
-        
         // We need to solve the matrix equation M * d = v
         // where M is a tri-diagonal matrix:
         
@@ -184,8 +172,6 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         
     }
     
-    
-    
     static func solveClosed(_ v:[S]) throws -> [S] {
         // We need to solve the matrix equation M * d = v
         // where M is the matrix:
@@ -199,10 +185,8 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         //  1   0   0   0  ...  0   1   4
         let n = v.count
         var nn = Int32(n)
-       // var ret = [Double](repeating: Double(), count: 2*v.count)
+       
         var ipiv = Array<Int32>(repeating: 0, count: n)
-        //var ipiv:Int32 = 0
-        //var a = Array<Double>(repeating: 0, count:n*n)
        
         var M = Matrix(rows: n,columns: n)
         
@@ -218,51 +202,24 @@ public struct CubicSpline<S:Flattenable> where S.Scalar == Double {
         M[0,n-1] = 1
         M[n-1,0] = 1
         
-        /*
-        print("-------")
-        for i in 0..<n {
-            var str = ""
-            for j in 0..<n {
-                str.append("\(Int(M[i,j])),")
-            }
-            print(str)
-        }
-        print("-------")
-        */
-        
         var b = S.toDoubleArray(array: v)
-        //var b = v.toDoubleArray()
         
-       // _ = cblas_dcopy(Int32(v.count), &b, 1, &ret, 1)
         var nrhs:LAInt = LAInt(S.scalarCount)
         var info:LAInt = 0
         
         _ = withUnsafeMutablePointer(to: &nn) { N in
             withUnsafeMutablePointer(to: &nrhs) { NRHS in
-                 //withUnsafeMutablePointer(to: &ipiv, { IPIV in
                      withUnsafeMutablePointer(to: &info) { INFO in
                          dgesv_(N, NRHS, &M.grid, N, &ipiv, &b, N, INFO)
                      }
-                // })'dgesv_' was deprecated in visionOS 1.0: The CLAPACK interface is deprecated.  Please compile with -DACCELERATE_NEW_LAPACK to access the new lapack headers.
              }
          }
 
-        // error handling
-        /*
-        INFO is INTEGER
-                  = 0:  successful exit
-                  < 0:  if INFO = -i, the i-th argument had an illegal value
-                  > 0:  if INFO = i, U(i,i) is exactly zero.  The factorization
-                        has been completed, but the factor U is exactly
-                        singular, so the solution could not be computed.
-         */
         switch info {
             case 0:
                 return S.toSIMDArray(array: b)
-                //return b.toSIMD2Array()
             case let i where i > 0:
-                throw LaPackError.leadingMinorNotPositiveDefinit(Int(i))
-               // assertionFailure("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.")
+                throw LaPackError.exactlyZero(Int(i))
             case let i where i < 0:
                 throw LaPackError.illegalValue(Int(i))
             default:
@@ -278,6 +235,7 @@ extension CubicSpline {
 }
 
 enum LaPackError:Error {
+    case exactlyZero(Int)
     case leadingMinorNotPositiveDefinit(Int)
     case illegalValue(Int)
     case impossibleError
@@ -290,6 +248,9 @@ extension LaPackError: LocalizedError {
             return NSLocalizedString("Error: The leading minor of order \(i) is not positive definite, and the solution has not been computed.  The factorization has not been completed unless \(i) = N.", comment: "LaPack Error")
         case .illegalValue(let i):
             return NSLocalizedString("Error: the \(i)-th argument had an illegal value.", comment: "LaPack Error")
+            
+        case .exactlyZero(let i):
+            return NSLocalizedString("U(\(i),\(i)) is exactly zero.  The factorization has been completed, but the factor U is exactly singular, so the solution could not be computed.",comment: "LaPack Error")
         case .impossibleError:
             return NSLocalizedString("This error is impossible. If you are seeing this you do not exist.", comment: "Impossible error.")
         }
