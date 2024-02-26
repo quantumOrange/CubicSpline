@@ -7,7 +7,11 @@
 
 import Foundation
 
-public struct CubicCurve<S:SIMD> where S.Scalar == Double {
+public typealias CubicCurve2D = CubicCurve<SIMD2<Double>>
+public typealias CubicCurve3D = CubicCurve<SIMD3<Double>>
+public typealias CubicCurve4D = CubicCurve<SIMD4<Double>>
+
+public struct CubicCurve<S:SIMD> where S.Scalar == Double  {
     
     let a: S
     let b: S
@@ -78,4 +82,8 @@ extension CubicCurve<SIMD3<Double>> {
         self.c = [c.c.x,y,c.c.y]
         self.d = [c.d.x,y,c.d.y]
     }
+}
+
+extension CubicCurve : Codable {
+    
 }

@@ -8,9 +8,10 @@
 import Foundation
 import simd
 
-public typealias CubicCurve2D = CubicCurve<SIMD2<Double>>
-public typealias CubicCurve3D = CubicCurve<SIMD3<Double>>
-public typealias CubicCurve4D = CubicCurve<SIMD4<Double>>
+public typealias CubicSpline2D = CubicSpline<SIMD2<Double>>
+public typealias CubicSpline3D = CubicSpline<SIMD3<Double>>
+public typealias CubicSpline4D = CubicSpline<SIMD4<Double>>
+
 
 #if os(Linux)
     import CLapacke_Linux
@@ -232,6 +233,14 @@ extension CubicSpline {
     public var endPoints:[S] {
         cubicCurves.endPoints
     }
+    
+    public var start:S? {
+        cubicCurves.first?.start
+    }
+    
+    public var end:S? {
+        cubicCurves.last?.end
+    }
 }
 
 enum LaPackError:Error {
@@ -259,3 +268,6 @@ extension LaPackError: LocalizedError {
 
 
 
+extension CubicSpline : Codable {
+    
+}
